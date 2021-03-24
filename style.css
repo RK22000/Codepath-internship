@@ -18,8 +18,23 @@ button {
   border-radius: 10px;
 }
 
+#startBox > p {
+  margin: 0em;
+  font-weight: bold;
+  color: lightgrey;
+}
+
+select {
+  font-size: 23px;
+  border-radius: 10px;
+}
+
 .hidden {
   display: none;
+}
+
+.disabled {
+  pointer-events: none;
 }
 
 #gameButtonArea > button {
