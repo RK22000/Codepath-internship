@@ -2,13 +2,16 @@
 const clueHoldTime = 1000; // duration of clue holding in ms
 const cluePauseTime = 333; //how long to pause in between clues
 const nextClueWaitTime = 1000; //how long to wait before starting playback of the clue sequence
+const mistakeLimit = 3;
 //Global Variables
-var pattern = [2, 2, 4, 3, 2, 1, 2, 4];
+var pattern = [];
+var patternSize;  // Expect this to be reset to a different value on starting game
 var progress = 0;
 var gamePlaying = false;
 var tonePlaying = false;
 var volume = 0.5; //must be between 0-1
 var guessCounter = 0;
+var mistakes = 0;
 
 // Sound Synthesis Functions
 const freqMap = {
@@ -47,12 +50,23 @@ g.gain.setValueAtTime(0, context.currentTime);
 o.connect(g);
 o.start(0);
 
+
+function makePattern(size){
+  for(var i = 0; i < size; i++){
+    pattern[i] = Math.floor(Math.random()*4) + 1;
+  }
+  console.log("prepared pattern [" + pattern + "]");
+}
+
 function startGame() {
   //initialize game variables
+  let sizeList = document.getElementById("sizeOptions");
+  patternSize = sizeList.options[sizeList.selectedIndex].value;
+  makePattern(patternSize)
   progress = 0;
   gamePlaying = true;
   //swap the Start and Stop buttons
-  document.getElementById("startBtn").classList.add("hidden");
+  document.getElementById("startBox").classList.add("hidden");
   document.getElementById("stopBtn").classList.remove("hidden");
   //Give out the first clue
   playClueSequence();
@@ -63,7 +77,7 @@ function stopGame() {
   gamePlaying = false;
   //swap the Start and Stop buttons
   document.getElementById("stopBtn").classList.add("hidden");
-  document.getElementById("startBtn").classList.remove("hidden");
+  document.getElementById("startBox").classList.remove("hidden");
 }
 
 function lightButton(btn){
@@ -100,6 +114,18 @@ function enableGameButtons() {
   document.getElementById("gameButtonArea").classList.remove("disabled");
 }
 
+function mistake(){
+  if(mistakes < mistakeLimit-1){
+    mistakes++;
+    alert("That was an incorrect selection. You are allowed " + (mistakeLimit-mistakes) + " more mistakes");
+  } else if(mistakes < mistakeLimit){
+    mistakes++;
+    alert("That was an incorrect selection. You are allowed no more mistakes");
+  } else{
+    looseGame();
+  }
+}
+
 function looseGame(){
   stopGame();
   alert("Game Over. You lost.");
@@ -116,10 +142,10 @@ function guess(btn){
   }
   //game logic
   if(btn != pattern[guessCounter])
-    looseGame();
+    mistake();
   else if(guessCounter < progress)
     guessCounter++;
-  else if(progress < 7 ){
+  else if(progress < patternSize-1 ){
     progress++;
     playClueSequence();
   }
