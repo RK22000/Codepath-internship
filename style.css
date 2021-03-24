@@ -22,6 +22,10 @@ button {
   display: none;
 }
 
+.disabled {
+  pointer-events: none;
+}
+
 #gameButtonArea > button {
   width: 200px;
   height: 200px;

@@ -83,6 +83,8 @@ function playSingleClue(btn){
 
 function playClueSequence(){
   guessCounter = 0;
+  //disable game buttons
+  document.getElementById("gameButtonArea").classList.add("disabled");
   let delay = nextClueWaitTime; //set delay to initial wait time
   for(let i=0;i<=progress;i++){ // for each clue that is revealed so far
     console.log("play single clue: " + pattern[i] + " in " + delay/1000 + "s")
@@ -90,6 +92,12 @@ function playClueSequence(){
     delay += clueHoldTime 
     delay += cluePauseTime;
   }
+  //setTimeOut(enable game buttons after sequence is played)
+  setTimeout(enableGameButtons, delay);
+}
+
+function enableGameButtons() {
+  document.getElementById("gameButtonArea").classList.remove("disabled");
 }
 
 function looseGame(){
@@ -106,8 +114,7 @@ function guess(btn){
   if(!gamePlaying){
     return;
   }
-
-  // add game logic here
+  //game logic
   if(btn != pattern[guessCounter])
     looseGame();
   else if(guessCounter < progress)
